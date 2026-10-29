@@ -34,6 +34,8 @@ RUN pnpm install --frozen-lockfile
 # ------------------------------------------------------------------------------ build
 FROM deps AS build
 COPY . .
+# A Windows checkout may have CRLF endings; shell scripts run inside the container must be LF.
+RUN sed -i 's/\r$//' infra/docker/*.sh
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 

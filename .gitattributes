@@ -1,0 +1,7 @@
+# Normalise line endings so files run identically on Windows, macOS and Linux checkouts.
+* text=auto eol=lf
+*.sh text eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
