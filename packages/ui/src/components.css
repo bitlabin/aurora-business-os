@@ -40,10 +40,61 @@
   background: linear-gradient(135deg, var(--color-primary), #5bc0d0);
   flex: none;
 }
+.au-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.au-nav-search {
+  position: relative;
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+.au-nav-search input {
+  width: 100%;
+  height: 34px;
+  padding: 0 52px 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-nav-text-active);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+[dir='rtl'] .au-nav-search input {
+  padding: 0 var(--space-3) 0 52px;
+}
+.au-nav-search input::placeholder {
+  color: rgba(201, 212, 227, 0.55);
+}
+.au-nav-search input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(18, 125, 145, 0.35);
+}
+.au-nav-search kbd {
+  position: absolute;
+  inset-inline-end: 20px;
+  top: 50%;
+  transform: translateY(-30%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(201, 212, 227, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
 .au-nav {
   list-style: none;
   margin: 0;
   padding: var(--space-2);
+  flex: 1;
+  overflow-y: auto;
+}
+.au-nav-empty {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  color: rgba(201, 212, 227, 0.6);
 }
 .au-nav-section {
   font-size: var(--text-xs);
@@ -52,26 +103,112 @@
   color: rgba(201, 212, 227, 0.6);
   padding: var(--space-3) var(--space-3) var(--space-1);
 }
-.au-nav-item a {
+.au-nav-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+.au-nav-link {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
   padding: 7px var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--color-nav-text);
   font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1.3;
 }
-.au-nav-item a:hover {
+.au-nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.au-nav-icon {
+  flex: none;
+  opacity: 0.85;
+}
+a.au-nav-link:hover {
   background: rgba(255, 255, 255, 0.06);
   color: var(--color-nav-text-active);
 }
-.au-nav-item a[aria-current='page'] {
+a.au-nav-link[aria-current='page'] {
   background: var(--color-nav-bg-active);
   color: var(--color-nav-text-active);
   box-shadow: inset 3px 0 0 var(--color-primary);
 }
-[dir='rtl'] .au-nav-item a[aria-current='page'] {
+[dir='rtl'] a.au-nav-link[aria-current='page'] {
   box-shadow: inset -3px 0 0 var(--color-primary);
+}
+.au-nav-planned {
+  color: rgba(201, 212, 227, 0.45);
+  cursor: default;
+}
+.au-nav-planned .au-nav-icon {
+  opacity: 0.5;
+}
+.au-nav-tag {
+  flex: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(201, 212, 227, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.au-nav-toggle {
+  flex: none;
+  width: 28px;
+  border: 0;
+  background: transparent;
+  color: rgba(201, 212, 227, 0.6);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.au-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-nav-text-active);
+}
+.au-nav-toggle svg {
+  transition: transform 120ms ease;
+}
+.au-nav-toggle[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.au-nav-children {
+  list-style: none;
+  margin: 2px 0 4px;
+  padding: 0;
+}
+.au-nav-sub .au-nav-link {
+  padding-block: 5px;
+  padding-inline-start: 42px;
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+.au-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: var(--text-sm);
+}
+.au-sidebar-user {
+  color: var(--color-nav-text-active);
+  font-weight: 500;
+}
+.au-sidebar-tenant {
+  color: rgba(201, 212, 227, 0.6);
+  font-size: var(--text-xs);
 }
 .au-topbar {
   grid-column: 2;

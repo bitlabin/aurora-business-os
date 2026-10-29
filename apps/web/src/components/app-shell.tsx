@@ -1,26 +1,22 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { Button, Select, pickLocalized } from '@aurora/ui';
 import { useLocale, useT } from '../lib/i18n';
 import { useSession } from '../lib/session';
+import { SidebarNav } from './sidebar-nav';
 
 /**
- * Original enterprise shell (FDD §2.2, A.1): dark sidebar generated from the capabilities
- * response, top bar with company selector, language switcher and quick-create.
+ * Original enterprise shell (FDD §2.2, A.1): dark sidebar in the product-wide order the API
+ * returns (Home … Settings), top bar with company selector, language switcher and quick-create.
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const t = useT();
   const { locale, setLocale } = useLocale();
   const { session, companyId, selectCompany, capabilities, signOut } = useSession();
-  const pathname = usePathname();
   const [mobileNav, setMobileNav] = useState(false);
 
   const nav = capabilities?.navigation ?? [];
-  const main = nav.filter((n) => !n.key.startsWith('admin.'));
-  const admin = nav.filter((n) => n.key.startsWith('admin.'));
 
   return (
     <div className="au-shell" data-mobile-nav={mobileNav ? 'open' : 'closed'}>
@@ -29,39 +25,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="au-brand-mark" />
           <span>{t('app.name')}</span>
         </div>
-        <nav>
-          <ul className="au-nav">
-            {main.map((n) => (
-              <li key={n.key} className="au-nav-item">
-                <Link
-                  href={n.href}
-                  aria-current={pathname.startsWith(n.href) ? 'page' : undefined}
-                  onClick={() => {
-                    setMobileNav(false);
-                  }}
-                >
-                  {pickLocalized(n.label, locale)}
-                </Link>
-              </li>
-            ))}
-            {admin.length > 0 ? (
-              <li className="au-nav-section">{locale === 'ar' ? 'الإدارة' : 'Administration'}</li>
-            ) : null}
-            {admin.map((n) => (
-              <li key={n.key} className="au-nav-item">
-                <Link
-                  href={n.href}
-                  aria-current={pathname.startsWith(n.href) ? 'page' : undefined}
-                  onClick={() => {
-                    setMobileNav(false);
-                  }}
-                >
-                  {pickLocalized(n.label, locale)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <Suspense fallback={null}>
+          <SidebarNav
+            items={nav}
+            onNavigate={() => {
+              setMobileNav(false);
+            }}
+          />
+        </Suspense>
+        <div className="au-sidebar-footer">
+          <span className="au-sidebar-user">{session.user.displayName}</span>
+          <span className="au-sidebar-tenant">{session.tenant.name}</span>
+        </div>
       </aside>
 
       <header className="au-topbar">
@@ -122,9 +97,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <option value="en">English</option>
           <option value="ar">العربية</option>
         </Select>
-        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
-          {session.user.displayName} · {session.tenant.name}
-        </span>
         <Button size="sm" onClick={() => void signOut()}>
           {t('nav.signout')}
         </Button>

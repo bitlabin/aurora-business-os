@@ -59,10 +59,10 @@ export default function HomePage() {
               </li>
             ))}
             {(capabilities?.navigation ?? [])
-              .filter((n) => n.key !== 'home')
+              .filter((n) => n.key !== 'home' && n.parentKey !== null && n.href !== null)
               .map((n) => (
                 <li key={n.key}>
-                  <Link href={n.href}>{pickLocalized(n.label, locale)}</Link>
+                  <Link href={n.href ?? '/home'}>{pickLocalized(n.label, locale)}</Link>
                 </li>
               ))}
           </ul>

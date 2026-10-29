@@ -15,10 +15,13 @@ export function PartyForm({
   onSubmit,
   busy,
   serverError,
+  initialRole = 'CUSTOMER',
 }: {
   onSubmit: (input: CreatePartyRequest) => void;
   busy: boolean;
   serverError?: string | undefined;
+  /** Pre-ticked role, e.g. SUPPLIER when opened from the Suppliers section. */
+  initialRole?: PartyRole;
 }) {
   const t = useT();
   const [form, setForm] = useState({
@@ -31,7 +34,7 @@ export function PartyForm({
     taxRegistrationId: '',
     tags: '',
   });
-  const [roles, setRoles] = useState<PartyRole[]>(['CUSTOMER']);
+  const [roles, setRoles] = useState<PartyRole[]>([initialRole]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function submit(e: SyntheticEvent) {

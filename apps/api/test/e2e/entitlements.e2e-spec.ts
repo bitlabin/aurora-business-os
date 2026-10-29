@@ -53,18 +53,46 @@ describe('module entitlements', () => {
   it('navigation is generated from entitlements ∩ permissions and contains no disabled sections', async () => {
     const consultant = await as(t, 'northwind', 'consultant', 'NWC');
     const caps = await consultant.get('/capabilities');
-    expect(caps.body.navigation.map((n: { key: string }) => n.key)).toEqual([
+    const keys = caps.body.navigation.map((n: { key: string }) => n.key);
+    // sales_rep: no admin permissions → no Settings group; tenant has no inventory → no warehouses
+    expect(keys).toEqual([
       'home',
-      'crm.parties',
-      'catalog.items',
+      'products',
+      'products.items',
+      'customers',
+      'customers.all',
+      'customers.prospects',
+      'customers.parties',
+      'suppliers',
+      'suppliers.all',
+      'invoices',
+      'orders',
+      'orders.sales_orders',
+      'orders.quotes',
+      'payments',
+      'expenses',
+      'accounting',
+      'accounting.chart_of_accounts',
+      'accounting.journals',
+      'accounting.reports',
     ]);
-    expect(caps.body.quickCreate.map((q: { key: string }) => q.key)).toEqual(['party']); // sales_rep may not create items
+    // Planned entries never carry a link; available ones always do (FDD §26.3).
+    for (const n of caps.body.navigation as { status: string; href: string | null }[]) {
+      expect(n.status === 'available' ? typeof n.href : n.href).toBe(
+        n.status === 'available' ? 'string' : null,
+      );
+    }
+    expect(caps.body.quickCreate.map((q: { key: string }) => q.key)).toEqual([
+      'customer',
+      'supplier',
+    ]); // sales_rep may not create items
     const owner = await as(t, 'harbor', 'owner', 'HDL');
-    const ownerCaps = await owner.get('/capabilities');
-    expect(ownerCaps.body.navigation.map((n: { key: string }) => n.key)).toContain(
-      'inventory.warehouses',
+    const ownerKeys = (await owner.get('/capabilities')).body.navigation.map(
+      (n: { key: string }) => n.key,
     );
-    expect(ownerCaps.body.navigation.map((n: { key: string }) => n.key)).toContain('admin.modules');
+    expect(ownerKeys).toContain('products.warehouses');
+    expect(ownerKeys).toContain('suppliers.purchase_orders');
+    expect(ownerKeys).toContain('settings.modules');
   });
 
   it('enabling a module is audited and takes effect on the next request; core modules cannot be toggled', async () => {

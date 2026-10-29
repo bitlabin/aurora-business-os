@@ -24,7 +24,7 @@ needs only email and password.
 | User                      | Tenant        | Role                 | Sees                                             |
 | ------------------------- | ------------- | -------------------- | ------------------------------------------------ |
 | owner@northwind.demo      | Northwind     | owner                | NWC (consultancy, USD) and NWB (contractor, USD) |
-| consultant@northwind.demo | Northwind     | sales_rep            | NWC only; no Administration menu                 |
+| consultant@northwind.demo | Northwind     | sales_rep            | NWC only; no Settings section                    |
 | auditor@northwind.demo    | Northwind     | auditor              | NWC and NWB, read-only; audit tabs on records    |
 | owner@harbor.demo         | Harbor Retail | owner                | HRS (retailer, IQD) and HDL (distributor, USD)   |
 | stock@harbor.demo         | Harbor Retail | inventory_controller | HDL only; warehouses and items                   |
@@ -34,10 +34,14 @@ needs only email and password.
 
 1. Sign in as **owner@northwind.demo**. The company switcher at the top shows
    `NWC · Northwind Consulting (USD)`.
-2. The sidebar shows Home, Parties, Items & Services and the Administration section. There is
-   **no Warehouses entry**: the inventory module is not enabled for this tenant, so the
-   navigation is built from entitlements, not from a fixed menu.
-3. Open **Items & Services**. Every row is a service, labour rate or expense item with no
+2. The sidebar always follows the same product map — Home, Products, Customers, Suppliers,
+   Invoices, Orders, Payments, Expenses, Accounting, Settings. Sections that are not built yet
+   (Invoices, Orders, Payments, Expenses, Accounting) are greyed out with a **Phase 1** tag and
+   are not clickable; they light up in place as each module ships. Expand **Products**: there is
+   **no Warehouses entry** because the inventory module is not enabled for this tenant — what is
+   live is decided by entitlements and permissions, never by a fixed menu. `Ctrl+K` focuses the
+   menu search.
+3. Open **Products → Items & services**. Every row is a service, labour rate or expense item with no
    physical attributes.
 4. **+ Create → Item**. Choose kind `SERVICE`. The physical section (barcode, dimensions,
    tracking) is not shown; the form explains that this kind has no physical attributes. Create
@@ -53,9 +57,9 @@ needs only email and password.
 ## 2. Roles and company scope (SEC-001, SEC-003, T-020)
 
 1. Sign out (top right). Sign in as **consultant@northwind.demo**.
-2. The Administration section is absent and the company switcher offers only NWC: this user is
+2. The Settings section is absent and the company switcher offers only NWC: this user is
    scoped to one company.
-3. Open **Parties**, open any party. There is no **Archive** button: the sales_rep role has no
+3. Open **Customers** (or **Suppliers**), open any record. There is no **Archive** button: the sales_rep role has no
    `crm.party.archive` permission. The UI hides it, and the API answers
    `403 FORBIDDEN "Missing permission crm.party.archive"` to a direct call regardless.
 4. Sign in as **auditor@northwind.demo**. Everything is readable, nothing is editable, and record
@@ -63,9 +67,9 @@ needs only email and password.
 
 ## 3. Modules and industry packs are configuration, not forks (CFG-001, CFG-003)
 
-1. Sign in as **owner@northwind.demo**, open **Administration → Modules & Industry Packs**.
+1. Sign in as **owner@northwind.demo**, open **Settings → Modules & industry packs**.
 2. Enter a reason (required, at least 3 characters: the reason is written to the audit trail).
-   Enable **inventory**. The Warehouses entry appears in the sidebar at once; the entitlement is
+   Enable **inventory**. **Products → Warehouses** appears in the sidebar at once; the entitlement is
    evaluated per request, not cached in the browser.
 3. Disable **inventory** again. Expected: allowed. The API runs every registered deactivation
    guard before disabling a module and refuses with the list of blockers; the first guard
@@ -93,7 +97,7 @@ tracking` next to the field. The rule lives in the shared domain package, is enf
    (IQD, three decimals when amounts arrive in Phase 1); the T-shirt barcode `0012345` keeps its
    leading zeros. Two legal entities, two base currencies, one party master; there are no
    prices or amounts on items yet.
-6. Sign in as **cashier@harbor.demo**: HRS only, no Warehouses entry, no Administration.
+6. Sign in as **cashier@harbor.demo**: HRS only, no Warehouses entry, no Settings.
 
 ## 5. Cross-tenant isolation (T-001, T-002, T-022)
 
@@ -107,7 +111,7 @@ tracking` next to the field. The rule lives in the shared domain package, is enf
 
 ## 6. Everything leaves a trace (SEC-005)
 
-1. As **owner@northwind.demo**, open **Administration → Audit Log**.
+1. As **owner@northwind.demo**, open **Settings → Audit log**.
 2. Find your own `auth.login`, the `entitlement.*` rows from step 3 with the reason you typed,
    the `industry_pack.installed` row, and `item.created` for the workshop.
 3. Rows marked **sensitive** had their payload redacted before storage; passwords and tokens

@@ -8,9 +8,7 @@ const API_PREFIX = '/api/v1/';
  * deployed API without being rebuilt.
  */
 function apiBaseUrl(): string {
-  return (
-    process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
-  );
+  return process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 }
 
 /**

@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { PARTY_ROLES, type Party, type PartyRole } from '@aurora/types';
 import {
@@ -16,6 +16,7 @@ import {
   Skeleton,
 } from '@aurora/ui';
 import { useT } from '../../../../lib/i18n';
+import type { MessageKey } from '../../../../lib/i18n-core';
 import { errorMessage, useSession } from '../../../../lib/session';
 
 const STATUS_TONE = {
@@ -25,13 +26,44 @@ const STATUS_TONE = {
   ARCHIVED: 'muted',
 } as const;
 
+function roleFromUrl(value: string | null): PartyRole | '' {
+  return value && (PARTY_ROLES as readonly string[]).includes(value) ? (value as PartyRole) : '';
+}
+
+/** Page title follows the sidebar entry: Customers, Suppliers, Prospects … or all parties. */
+function titleKey(role: PartyRole | ''): MessageKey {
+  if (role === 'CUSTOMER') return 'parties.titleCustomers';
+  if (role === 'SUPPLIER') return 'parties.titleSuppliers';
+  if (role === 'PROSPECT') return 'parties.titleProspects';
+  return 'parties.title';
+}
+
+function newLabelKey(role: PartyRole | ''): MessageKey {
+  if (role === 'CUSTOMER') return 'parties.newCustomer';
+  if (role === 'SUPPLIER') return 'parties.newSupplier';
+  if (role === 'PROSPECT') return 'parties.newProspect';
+  return 'parties.new';
+}
+
 export default function PartiesPage() {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <PartiesList />
+    </Suspense>
+  );
+}
+
+function PartiesList() {
   const t = useT();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { api, can, companyId } = useSession();
   const [q, setQ] = useState('');
-  const [role, setRole] = useState<PartyRole | ''>('');
   const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const role = roleFromUrl(searchParams.get('role'));
+  const setRole = (next: PartyRole | '') => {
+    router.replace(next ? `/crm/parties?role=${next}` : '/crm/parties');
+  };
 
   const query = useQuery({
     queryKey: ['parties', companyId, q, role, cursor],
@@ -77,12 +109,15 @@ export default function PartiesPage() {
   return (
     <>
       <PageHeader
-        title={t('parties.title')}
+        title={t(titleKey(role))}
         subtitle={t('parties.subtitle')}
         actions={
           can('crm.party.create') ? (
-            <Link href="/crm/parties/new" className="au-btn au-btn--primary">
-              {t('parties.new')}
+            <Link
+              href={role ? `/crm/parties/new?role=${role}` : '/crm/parties/new'}
+              className="au-btn au-btn--primary"
+            >
+              {t(newLabelKey(role))}
             </Link>
           ) : null
         }
@@ -97,7 +132,7 @@ export default function PartiesPage() {
       ) : null}
       {query.data ? (
         <DataGrid<Party>
-          caption={t('parties.title')}
+          caption={t(titleKey(role))}
           columns={columns}
           rows={query.data.items}
           onRowClick={(p) => {
