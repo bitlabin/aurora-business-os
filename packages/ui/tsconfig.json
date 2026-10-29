@@ -1,0 +1,5 @@
+{
+  "extends": "@aurora/config/tsconfig.next.json",
+  "compilerOptions": { "plugins": [], "jsx": "react-jsx" },
+  "include": ["src"]
+}

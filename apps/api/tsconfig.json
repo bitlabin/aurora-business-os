@@ -1,0 +1,9 @@
+{
+  "extends": "@aurora/config/tsconfig.nest.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": "."
+  },
+  "include": ["src", "test", "drizzle.config.ts", "vitest.config.ts"]
+}

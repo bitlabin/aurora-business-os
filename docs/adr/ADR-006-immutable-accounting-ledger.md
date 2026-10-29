@@ -24,7 +24,7 @@ project could make, so the design is fixed before any transactional module is wr
    `tenant_id` and `company_id` so a line can never reference an account of another entity.
 2. **Database-enforced invariants** (migration SQL, not only application code):
    - `CHECK (debit_base >= 0 AND credit_base >= 0 AND (debit_base = 0 OR credit_base = 0)
-     AND (debit_base <> 0 OR credit_base <> 0))`
+AND (debit_base <> 0 OR credit_base <> 0))`
    - A `DEFERRABLE INITIALLY DEFERRED` constraint trigger on `journal_lines` that, at commit,
      verifies `SUM(debit_base) = SUM(credit_base)` for every posted journal touched in the
      transaction, and that a posted journal has ≥ 2 lines.

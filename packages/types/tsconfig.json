@@ -1,0 +1,5 @@
+{
+  "extends": "@aurora/config/tsconfig.node-library.json",
+  "compilerOptions": { "noEmit": true, "types": ["node"] },
+  "include": ["src", "test", "vitest.config.ts"]
+}

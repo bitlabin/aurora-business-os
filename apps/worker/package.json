@@ -1,0 +1,26 @@
+{
+  "name": "@aurora/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Background workers: outbox relay and job consumers (scaffold in Phase 0; first consumers in Phase 1)",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@aurora/types": "workspace:*",
+    "bullmq": "5.81.5",
+    "ioredis": "5.11.1",
+    "pg": "8.23.1",
+    "pino": "10.4.0"
+  },
+  "devDependencies": {
+    "@aurora/config": "workspace:*",
+    "@types/pg": "8.23.1",
+    "tsx": "4.23.15",
+    "vitest": "3.2.7"
+  }
+}

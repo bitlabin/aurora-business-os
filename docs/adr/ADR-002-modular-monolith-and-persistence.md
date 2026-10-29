@@ -28,13 +28,13 @@ docs/           ADRs, architecture, runbooks, progress
 
 ### Module structure (inside `apps/api/src/modules/<name>`)
 
-| Layer | Allowed imports | Contains |
-|---|---|---|
-| `domain/` | `packages/types` only | Entities, value objects, invariants, domain errors. No NestJS, no Drizzle. |
-| `application/` | `domain/`, other modules' **public** `index.ts` ports | Commands/queries, authorization checks, transaction orchestration, outbox publication. |
-| `infrastructure/` | `domain/`, `application/`, Drizzle, Redis | Repositories, schema definitions, adapters. |
-| `api/` | `application/` | Controllers, DTOs (Zod), OpenAPI decorators, guards. |
-| `index.ts` | — | The module's **public contract**: exported NestJS module + service interfaces other modules may depend on. |
+| Layer             | Allowed imports                                       | Contains                                                                                                   |
+| ----------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `domain/`         | `packages/types` only                                 | Entities, value objects, invariants, domain errors. No NestJS, no Drizzle.                                 |
+| `application/`    | `domain/`, other modules' **public** `index.ts` ports | Commands/queries, authorization checks, transaction orchestration, outbox publication.                     |
+| `infrastructure/` | `domain/`, `application/`, Drizzle, Redis             | Repositories, schema definitions, adapters.                                                                |
+| `api/`            | `application/`                                        | Controllers, DTOs (Zod), OpenAPI decorators, guards.                                                       |
+| `index.ts`        | —                                                     | The module's **public contract**: exported NestJS module + service interfaces other modules may depend on. |
 
 Boundaries are enforced by `dependency-cruiser` (`.dependency-cruiser.cjs`): a module may import
 another module only through its `index.ts`; `domain/` may import nothing framework-related; a

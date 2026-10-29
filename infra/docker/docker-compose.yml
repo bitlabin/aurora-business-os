@@ -1,0 +1,33 @@
+# Local development infrastructure. Application runs on the host (pnpm dev).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aurora-postgres
+    environment:
+      POSTGRES_USER: aurora_admin
+      POSTGRES_PASSWORD: aurora_admin_dev
+      POSTGRES_DB: aurora
+    ports:
+      - '5432:5432'
+    volumes:
+      - aurora-pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U aurora_admin -d aurora']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: aurora-redis
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  aurora-pgdata:

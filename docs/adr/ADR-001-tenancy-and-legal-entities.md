@@ -20,7 +20,7 @@ optional per industry. Cross-tenant leakage is a release blocker (T-001, AT-030)
    entity-owned rows are **composite** `(tenant_id, <id>)` so a row can never reference a
    sibling in another tenant even if an application bug passes the wrong id.
 2. **Shared database, Row-Level Security:** one PostgreSQL database with `ENABLE ROW LEVEL
-   SECURITY` + `FORCE ROW LEVEL SECURITY` on every tenant-owned table. Policies compare
+SECURITY` + `FORCE ROW LEVEL SECURITY` on every tenant-owned table. Policies compare
    `tenant_id` with `current_setting('app.tenant_id', true)::uuid`. The application connects as
    a non-superuser role `aurora_app` that does **not** own the tables and therefore cannot
    bypass RLS. Each request runs inside a transaction that first executes

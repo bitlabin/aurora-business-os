@@ -21,8 +21,8 @@ through the API, invisible in navigation, and auditable when toggled.
   `automation`, `analytics`. Core modules (`crm`, `sales`, `accounting`, `documents`,
   `analytics`) are **always on** and cannot be disabled; the rest are optional.
 - `module_entitlements (tenant_id, module, status, enabled_at, enabled_by, disabled_at,
-  reason, version)` holds the tenant-level switch. `entity_capabilities (tenant_id, company_id,
-  module, enabled)` narrows optional modules per legal entity (a tenant may enable inventory for
+reason, version)` holds the tenant-level switch. `entity_capabilities (tenant_id, company_id,
+module, enabled)` narrows optional modules per legal entity (a tenant may enable inventory for
   its distributor entity but not its consulting entity).
 - Every change writes an `audit_events` row and an outbox event `entitlement.changed`.
 
