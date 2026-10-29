@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AppError } from '@aurora/types';
 import { z } from 'zod';
 import {
+  AuthOnly,
   CompanyScoped,
   Ctx,
   RequirePermission,
@@ -33,12 +34,14 @@ export class CompaniesController {
 
   /** Companies the caller is scoped to — never the whole tenant unless they hold admin.company.read. */
   @Get()
+  @AuthOnly()
   list(@Ctx() ctx: RequestContext) {
     const all = ctx.permissions.has('admin.company.read');
     return this.organization.listCompanies(ctx.tenant.id, all ? undefined : ctx.companyScopes);
   }
 
   @Get(':companyId')
+  @AuthOnly()
   async get(@Ctx() ctx: RequestContext, @ZodParam('companyId', z.uuid()) companyId: string) {
     if (!ctx.companyScopes.has(companyId as never) && !ctx.permissions.has('admin.company.read')) {
       throw AppError.notFound('Company');

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, DiscoveryModule } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 import { ACCESS_RESOLVER } from '../platform/auth/access-resolver';
 import { SECURITY_EVENT_SINK } from '../platform/auth/security-events';
@@ -39,6 +39,7 @@ import { TenantProvisioningService } from './provisioning/tenant-provisioning.se
         autoLogging: env().NODE_ENV !== 'test',
       },
     }),
+    DiscoveryModule,
     DatabaseModule,
     EventsModule,
     AuditModule,

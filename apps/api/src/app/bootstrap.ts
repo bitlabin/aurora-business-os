@@ -46,7 +46,11 @@ export async function createApp(
       void reply.header('x-request-id', _req.id);
     });
 
-  if (options.openApi !== false) setupOpenApi(app);
+  // API docs are for development and staging; in production they are off unless explicitly
+  // enabled, so the route inventory is not public by default (SEC-007).
+  const docsEnabled =
+    options.openApi ?? (env().NODE_ENV !== 'production' || process.env.OPENAPI_PUBLIC === 'true');
+  if (docsEnabled) setupOpenApi(app);
   app.enableShutdownHooks();
   return app;
 }

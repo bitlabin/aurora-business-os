@@ -1,5 +1,5 @@
 {
-  "$comment": "Tenant-owned tables that must have RLS enabled+forced with the tenant_isolation policy. Platform tables (users, tenants, sessions) are deliberately excluded. Verified by scripts/check-rls.ts (static) and test/e2e/rls.e2e-spec.ts (live).",
+  "$comment": "Tenant-owned tables that must have RLS enabled+forced with the tenant_isolation policy. Platform tables (users, tenants, sessions) are deliberately excluded. Verified by scripts/check-rls.ts (static) and test/e2e/parties-and-access.e2e-spec.ts (live RLS audit) (live).",
   "tables": [
     "memberships",
     "roles",

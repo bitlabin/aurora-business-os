@@ -10,6 +10,7 @@ import {
 } from '@aurora/types';
 import type { z } from 'zod';
 import {
+  AuthOnly,
   CompanyScoped,
   Ctx,
   RequirePermission,
@@ -25,6 +26,7 @@ import { IndustryPackService } from '../application/industry-pack.service';
 @Controller('capabilities')
 export class CapabilitiesController {
   @Get()
+  @AuthOnly()
   capabilities(@Ctx() ctx: RequestContext): CapabilitiesResponse {
     return {
       companyId: ctx.companyId as string,

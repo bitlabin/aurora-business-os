@@ -49,3 +49,12 @@ export const RequireModule = (module: ModuleKey) => SetMetadata(MODULE_KEY, modu
 export const COMPANY_SCOPED_KEY = 'aurora:company-scoped';
 /** Routes are company-scoped by default; tenant-level administration opts out. */
 export const CompanyScoped = (required: boolean) => SetMetadata(COMPANY_SCOPED_KEY, required);
+
+export const AUTH_ONLY_KEY = 'aurora:auth-only';
+/**
+ * Explicit marker for routes that intentionally require only authentication (plus company
+ * scope where applicable) and no permission — e.g. /auth/me, /capabilities. Every non-public
+ * route must carry either @RequirePermission or @AuthOnly; a test enforces it so a forgotten
+ * decorator cannot silently create an auth-only endpoint.
+ */
+export const AuthOnly = () => SetMetadata(AUTH_ONLY_KEY, true);

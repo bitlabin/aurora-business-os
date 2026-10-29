@@ -2,7 +2,7 @@
  * Static RLS lint (ADR-001). Fails when:
  *  - a Drizzle table has a tenant_id column but is not listed in drizzle/rls-tables.json, or
  *  - a listed table is never mentioned in a migration that enables row level security.
- * The live counterpart (test/e2e/rls.e2e-spec.ts) checks pg_class.relrowsecurity/relforcerowsecurity.
+ * The live counterpart (test/e2e/parties-and-access.e2e-spec.ts (live RLS audit)) checks pg_class.relrowsecurity/relforcerowsecurity.
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';

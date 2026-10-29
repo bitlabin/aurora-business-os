@@ -21,26 +21,33 @@ export interface AuditEntry {
   sensitive?: boolean;
 }
 
-const REDACTED_KEYS = new Set([
-  'password',
-  'passwordHash',
-  'password_hash',
-  'token',
-  'tokenHash',
-  'secret',
-  'apiKey',
-]);
+/** Key fragments (case-insensitive) that mark a value as a credential. */
+const SENSITIVE_KEY =
+  /password|passwd|secret|token|api[_-]?key|private[_-]?key|credential|authorization|mfa/i;
 
-/** Strip anything that looks like a credential before it reaches the audit log (SEC-005). */
+/**
+ * Strip anything that looks like a credential before it reaches the audit log (SEC-005).
+ * Recurses into nested objects and arrays; matching is case-insensitive on key fragments so
+ * `currentPassword`, `sessionToken` and `mfaSecret` are caught, not only exact names.
+ */
 export function redact(
   value: Record<string, unknown> | null | undefined,
 ): Record<string, unknown> | null {
   if (!value) return null;
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(value)) {
-    out[k] = REDACTED_KEYS.has(k) ? '[REDACTED]' : v;
+  return redactValue(value, 0) as Record<string, unknown>;
+}
+
+function redactValue(value: unknown, depth: number): unknown {
+  if (depth > 8) return '[TRUNCATED]';
+  if (Array.isArray(value)) return value.map((v) => redactValue(v, depth + 1));
+  if (value !== null && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      out[k] = SENSITIVE_KEY.test(k) ? '[REDACTED]' : redactValue(v, depth + 1);
+    }
+    return out;
   }
-  return out;
+  return value;
 }
 
 /**

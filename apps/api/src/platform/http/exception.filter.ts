@@ -25,9 +25,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     const body = this.toBody(exception, requestId);
     if (body.code === 'INTERNAL') {
-      this.logger.error(
-        `request ${requestId} failed: ${exception instanceof Error ? (exception.stack ?? exception.message) : String(exception)}`,
-      );
+      this.logger.error(`request ${requestId} failed: ${describeForLog(exception)}`);
     }
     void reply.status(this.statusOf(exception, body.code)).send(body);
   }
@@ -83,4 +81,25 @@ function mapHttpStatus(status: number): ErrorCode {
     default:
       return 'INTERNAL';
   }
+}
+
+/**
+ * Safe description for logs. Database driver errors embed the failed SQL *and its parameters*
+ * in their message (e.g. drizzle's "Failed query: … params: …"), which could include password
+ * or token hashes. Only the error class, a sanitised message and the cause's class/code are
+ * logged — never query parameters, never the stack of a driver error.
+ */
+export function describeForLog(exception: unknown): string {
+  if (!(exception instanceof Error)) return String(exception);
+  const cause = (exception as Error & { cause?: unknown }).cause;
+  const isDriverError =
+    exception.name === 'DrizzleQueryError' || /params:/i.test(exception.message);
+  if (isDriverError) {
+    const causeInfo =
+      cause instanceof Error
+        ? ` cause=${cause.name}${'code' in cause ? `(${String((cause as { code?: unknown }).code)})` : ''}: ${cause.message}`
+        : '';
+    return `${exception.name}: database query failed (query and parameters withheld from logs)${causeInfo}`;
+  }
+  return exception.stack ?? `${exception.name}: ${exception.message}`;
 }

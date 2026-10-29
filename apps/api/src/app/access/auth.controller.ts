@@ -5,6 +5,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { z } from 'zod';
 import { SESSION_COOKIE } from '../../platform/auth/guards';
 import {
+  AuthOnly,
   CompanyScoped,
   Ctx,
   Public,
@@ -107,6 +108,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
+  @AuthOnly()
   async logout(
     @Ctx() ctx: RequestContext,
     @Res({ passthrough: true }) reply: FastifyReply,
@@ -130,6 +132,7 @@ export class AuthController {
 
   @Post('logout-all')
   @HttpCode(200)
+  @AuthOnly()
   async logoutAll(
     @Ctx() ctx: RequestContext,
     @Res({ passthrough: true }) reply: FastifyReply,
@@ -153,6 +156,7 @@ export class AuthController {
   }
 
   @Get('me')
+  @AuthOnly()
   async me(@Ctx() ctx: RequestContext): Promise<SessionInfo> {
     const companies = await this.organization.listCompanies(ctx.tenant.id, ctx.companyScopes);
     return {
