@@ -165,18 +165,16 @@ export class EntitlementService {
             })
             .where(eq(moduleEntitlements.id, existing.id));
         } else {
-          await db
-            .insert(moduleEntitlements)
-            .values({
-              id: newId(),
-              tenantId,
-              module,
-              status: 'enabled',
-              enabledAt: now,
-              enabledBy: actor.userId ?? null,
-              reason,
-              createdBy: actor.userId ?? null,
-            });
+          await db.insert(moduleEntitlements).values({
+            id: newId(),
+            tenantId,
+            module,
+            status: 'enabled',
+            enabledAt: now,
+            enabledBy: actor.userId ?? null,
+            reason,
+            createdBy: actor.userId ?? null,
+          });
         }
         await this.audit.record({
           tenantId,
@@ -287,17 +285,15 @@ export class EntitlementService {
             .set({ enabled, reason, updatedBy: actor.userId ?? null })
             .where(eq(entityCapabilities.id, existing.id));
         } else {
-          await db
-            .insert(entityCapabilities)
-            .values({
-              id: newId(),
-              tenantId,
-              companyId,
-              module,
-              enabled,
-              reason,
-              createdBy: actor.userId ?? null,
-            });
+          await db.insert(entityCapabilities).values({
+            id: newId(),
+            tenantId,
+            companyId,
+            module,
+            enabled,
+            reason,
+            createdBy: actor.userId ?? null,
+          });
         }
         await this.audit.record({
           tenantId,

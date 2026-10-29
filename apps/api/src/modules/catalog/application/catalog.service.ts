@@ -458,17 +458,15 @@ export class CatalogService {
       });
       if (dup && dup.itemId !== itemId)
         throw AppError.conflict(`Barcode ${b.value} is already assigned to another item`);
-      await db
-        .insert(itemBarcodes)
-        .values({
-          id: newId(),
-          tenantId,
-          itemId,
-          value: b.value,
-          symbology: b.symbology,
-          isPrimary: b.isPrimary,
-          createdBy: actor.userId ?? null,
-        });
+      await db.insert(itemBarcodes).values({
+        id: newId(),
+        tenantId,
+        itemId,
+        value: b.value,
+        symbology: b.symbology,
+        isPrimary: b.isPrimary,
+        createdBy: actor.userId ?? null,
+      });
     }
     return (await this.readPhysical(tenantId, itemId)) ?? { barcodes: [] };
   }

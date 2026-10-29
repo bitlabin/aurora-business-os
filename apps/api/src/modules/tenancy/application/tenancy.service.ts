@@ -139,17 +139,15 @@ export class TenancyService {
         });
         if (existing) throw AppError.conflict(`Role "${input.key}" already exists`);
         const roleId = newId<RoleId>();
-        await db
-          .insert(roles)
-          .values({
-            id: roleId,
-            tenantId,
-            key: input.key,
-            name: input.name,
-            templateKey: input.templateKey ?? null,
-            isSystem: false,
-            createdBy: actor.userId ?? null,
-          });
+        await db.insert(roles).values({
+          id: roleId,
+          tenantId,
+          key: input.key,
+          name: input.name,
+          templateKey: input.templateKey ?? null,
+          isSystem: false,
+          createdBy: actor.userId ?? null,
+        });
         if (input.permissions.length > 0) {
           await db
             .insert(rolePermissions)

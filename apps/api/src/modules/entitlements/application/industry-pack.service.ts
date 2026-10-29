@@ -136,16 +136,14 @@ export class IndustryPackService {
             })
             .where(eq(tenantIndustryPacks.id, existing.id));
         } else {
-          await db
-            .insert(tenantIndustryPacks)
-            .values({
-              id: newId(),
-              tenantId,
-              packId: pack.id,
-              packVersion: pack.version,
-              installedBy: actor.userId ?? null,
-              createdBy: actor.userId ?? null,
-            });
+          await db.insert(tenantIndustryPacks).values({
+            id: newId(),
+            tenantId,
+            packId: pack.id,
+            packVersion: pack.version,
+            installedBy: actor.userId ?? null,
+            createdBy: actor.userId ?? null,
+          });
         }
         await db.insert(configInstallEvents).values({
           id: newId(),
@@ -230,20 +228,18 @@ export class IndustryPackService {
             updatedBy: actor.userId ?? null,
           })
           .where(eq(tenantIndustryPacks.id, existing.id));
-        await db
-          .insert(configInstallEvents)
-          .values({
-            id: newId(),
-            tenantId,
-            packId: pack.id,
-            fromVersion: existing.packVersion,
-            toVersion: existing.packVersion,
-            action: 'remove',
-            diff: { modulesDisabled: pack.modules.filter((m) => !stillNeeded.has(m)) },
-            reason,
-            appliedBy: actor.userId ?? null,
-            requestId: actor.requestId ?? null,
-          });
+        await db.insert(configInstallEvents).values({
+          id: newId(),
+          tenantId,
+          packId: pack.id,
+          fromVersion: existing.packVersion,
+          toVersion: existing.packVersion,
+          action: 'remove',
+          diff: { modulesDisabled: pack.modules.filter((m) => !stillNeeded.has(m)) },
+          reason,
+          appliedBy: actor.userId ?? null,
+          requestId: actor.requestId ?? null,
+        });
         await this.audit.record({
           tenantId,
           actorUserId: actor.userId,

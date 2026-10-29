@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "Aurora design system: tokens, primitives, RTL-aware layout components",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
   "exports": {
-    ".": "./src/index.ts",
-    "./tokens.css": "./src/tokens.css"
+    ".": "./src/index.tsx",
+    "./tokens.css": "./src/tokens.css",
+    "./components.css": "./src/components.css"
   },
   "scripts": {
     "build": "echo 'consumed as source by Next.js'",

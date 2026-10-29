@@ -57,16 +57,14 @@ export class PartyService {
           .returning();
         if (!row) throw new Error('insert returned no row');
         const roles = [...new Set(input.roles)];
-        await db
-          .insert(partyRoles)
-          .values(
-            roles.map((role) => ({
-              tenantId,
-              partyId: id,
-              role,
-              assignedBy: actor.userId ?? null,
-            })),
-          );
+        await db.insert(partyRoles).values(
+          roles.map((role) => ({
+            tenantId,
+            partyId: id,
+            role,
+            assignedBy: actor.userId ?? null,
+          })),
+        );
         await this.audit.record({
           tenantId,
           actorUserId: actor.userId,
