@@ -23,10 +23,34 @@ packages/types  Branded ids, exact-decimal Money/Quantity, permission & module c
 packages/sdk    Typed API client
 packages/ui     Design tokens and primitives
 packages/config Shared tsconfig presets
-infra/docker    Postgres + Redis for local development
+infra/docker    Postgres + Redis for local development; Dockerfile + compose for the full demo stack
 docs/           ADRs, traceability matrix, open questions, progress
 scripts/        RLS lint, local Postgres fallback
 ```
+
+## Try the demo (one command, Docker only)
+
+The quickest way to sign in and click through Phase 0. Needs **Docker Desktop** (Windows, macOS
+or Linux) and **Git**; Node is not required on your machine.
+
+```bash
+git clone https://github.com/bitlabin/aurora-business-os.git
+cd aurora-business-os
+docker compose -f infra/docker/docker-compose.demo.yml up --build
+```
+
+The first run builds the image (a few minutes) and then applies migrations, seeds the DEMO
+dataset and starts the API and web app. When the log shows `aurora: database ready` and the web
+container is up, open **http://localhost:3000** and sign in with any user from the table below
+(password `Demo!Pass123`). The API reference is at http://localhost:4000/api/v1/docs.
+
+- Stop: `Ctrl+C`, or `docker compose -f infra/docker/docker-compose.demo.yml down`
+- Wipe and reseed: `docker compose -f infra/docker/docker-compose.demo.yml down -v`
+- Ports: set `WEB_PORT` / `API_PORT` in the environment if 3000 or 4000 is taken.
+
+A guided walkthrough of what to test, with the expected result of each step, is in
+[`docs/demo-guide.md`](docs/demo-guide.md). The compose file runs everything over plain http on
+localhost and uses throwaway credentials; it is not a deployment recipe.
 
 ## Quick start
 

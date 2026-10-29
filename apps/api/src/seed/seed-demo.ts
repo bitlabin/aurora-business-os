@@ -2,13 +2,24 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app/app.module';
 import { loadEnv } from '../platform/config/env';
-import { DEMO_PASSWORD, seedDemo } from './demo-dataset';
+import { TenancyService } from '../modules/tenancy';
+import { DEMO_PASSWORD, DEMO_TENANT_SLUGS, seedDemo } from './demo-dataset';
 
-/** `pnpm db:seed` — provisions the DEMO dataset. Safe to run once per database; re-running fails on duplicate slugs. */
+/**
+ * `pnpm db:seed` — provisions the DEMO dataset. Idempotent at the tenant level: when the demo
+ * tenants already exist it reports and exits 0, so a container entrypoint can run it on every
+ * start. It never partially re-seeds; drop the database to start over.
+ */
 async function main(): Promise<void> {
   loadEnv();
   const app = await NestFactory.createApplicationContext(AppModule, { logger: ['error', 'warn'] });
   try {
+    const tenancy = app.get(TenancyService);
+    const existing = await tenancy.findTenantBySlug(DEMO_TENANT_SLUGS.northwind);
+    if (existing) {
+      console.warn(`DEMO data already present (tenant ${existing.slug}); nothing to do.`);
+      return;
+    }
     const data = await seedDemo(app);
     console.warn('DEMO data seeded.');
     console.warn(

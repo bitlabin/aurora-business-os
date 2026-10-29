@@ -19,6 +19,10 @@ server-side authorization on every endpoint and background job, and audit of sec
   expiry, absolute expiry, device metadata, revoked_at), HttpOnly `SameSite=Strict` cookie for
   the web app, `Authorization: Bearer` for API clients. Access tokens are the session token
   itself (opaque, 256-bit random); there are no JWTs to leak claims or outlive revocation.
+- The browser only ever talks to the web origin: `apps/web/src/middleware.ts` proxies
+  `/api/v1/*` to the API (target read per request from `API_INTERNAL_URL`), so the cookie is
+  first-party and no CORS is needed. The cookie carries `Secure` in production unless
+  `SESSION_COOKIE_SECURE=false` is set explicitly for a plain-http local evaluation.
 - Lockout after N failed attempts per account and per IP (configurable), constant-time
   comparison, no user-enumeration in error messages.
 - The `IdentityProvider` port (`modules/identity/index.ts`) exposes `authenticate`,

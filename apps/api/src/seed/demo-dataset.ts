@@ -17,6 +17,8 @@ import { TenantProvisioningService } from '../app/provisioning/tenant-provisioni
  * seed is itself tested.
  */
 export const DEMO_PASSWORD = 'Demo!Pass123';
+/** Tenant slugs of the demo dataset (without the test suffix). */
+export const DEMO_TENANT_SLUGS = { northwind: 'northwind-group', harbor: 'harbor-retail' } as const;
 
 export interface DemoTenant {
   id: string;
@@ -63,7 +65,7 @@ export async function seedDemo(app: INestApplicationContext, suffix = ''): Promi
 
   // ------------------------------------------------------------------ Northwind Group (DEMO)
   const nw = await provisioning.provision(
-    { slug: `northwind-group${suffix}`, name: 'Northwind Group (DEMO)' },
+    { slug: `${DEMO_TENANT_SLUGS.northwind}${suffix}`, name: 'Northwind Group (DEMO)' },
     SYSTEM,
   );
   const nwc = await organization.createCompany(
@@ -206,7 +208,7 @@ export async function seedDemo(app: INestApplicationContext, suffix = ''): Promi
   // ------------------------------------------------------------------ Harbor Retail Holdings (DEMO)
   const hb = await provisioning.provision(
     {
-      slug: `harbor-retail${suffix}`,
+      slug: `${DEMO_TENANT_SLUGS.harbor}${suffix}`,
       name: 'Harbor Retail Holdings (DEMO)',
       defaultLocale: 'ar',
       defaultTimezone: 'Asia/Baghdad',

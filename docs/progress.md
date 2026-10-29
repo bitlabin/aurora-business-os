@@ -21,7 +21,7 @@ not exist, regardless of what a menu, ADR or manifest might suggest.
 | Catalog             | 8 item kinds with capability flags; kind policy enforced in domain **and** by DB CHECK constraints; physical profile + barcodes only for physical kinds (trigger-guarded); services need nothing physical; stocked kinds require the inventory module; leading-zero barcodes; default UOMs; categories                                                                                                                                                                              | `catalog.e2e-spec` (MI-001, MI-009, MI-022, MI-024, T-022), `item.spec`, `item-kinds.test`                                         |
 | Inventory surface   | Warehouse master behind `@RequireModule('inventory')` — exists to prove gating; no stock ledger                                                                                                                                                                                                                                                                                                                                                                                     | `entitlements.e2e-spec`                                                                                                            |
 | Money               | `Money`/`Quantity` exact decimals, currency minor units (IQD = 3), half-even rounding, largest-remainder allocation                                                                                                                                                                                                                                                                                                                                                                 | `money.test`                                                                                                                       |
-| Web                 | Next.js shell: login, entitlement-driven sidebar, company switcher, EN/AR with RTL, parties list/new/detail, items list/new/detail (kind-aware form), warehouses (module-gated), admin companies/members/modules+packs/audit. Production build passes.                                                                                                                                                                                                                              | `item-form.test` (MI-001 UI, MI-017), manual smoke through the Next rewrite                                                        |
+| Web                 | Next.js shell: login, entitlement-driven sidebar, company switcher, EN/AR with RTL, parties list/new/detail, items list/new/detail (kind-aware form), warehouses (module-gated), admin companies/members/modules+packs/audit. Production build passes.                                                                                                                                                                                                                              | `item-form.test` (MI-001 UI, MI-017), manual smoke through the web proxy; Docker demo stack                                        |
 | Independent review  | A separate read-only reviewer audited isolation, authorization, item-kind constraints, UI honesty, secret logging and module boundaries. Fixed: driver errors no longer log query parameters (`describeForLog`), audit redaction is recursive and case-insensitive, OpenAPI docs are off in production unless `OPENAPI_PUBLIC=true`, and every route must carry `@Public`, `@RequirePermission` or `@AuthOnly` (`route-coverage.e2e-spec`, proven to fail on a stripped decorator). | `audit.service.spec`, `exception.filter.spec`, `route-coverage.e2e-spec`                                                           |
 | Engineering gates   | ESLint type-checked, dependency-cruiser boundaries (proved to catch a deep import), RLS lint, Prettier, CI workflow, local Postgres fallback                                                                                                                                                                                                                                                                                                                                        | `pnpm lint`                                                                                                                        |
 
@@ -74,11 +74,21 @@ $ pnpm --filter @aurora/web build
  ✓ Compiled successfully — 15 routes
 ```
 
-Manual smoke (API :4000 + web :3000, browser path through the Next rewrite): login sets the
+Manual smoke (API :4000 + web :3000, browser path through the web proxy): login sets the
 HttpOnly cookie; `/home` renders; `/capabilities` for the service-only company returns the five
 core modules and a navigation without inventory; `/warehouses` answers `404 MODULE_DISABLED`;
 a SERVICE item is created with no physical attributes; `<html lang="ar" dir="rtl">` with
 `aurora_locale=ar`; OpenAPI at `/api/v1/openapi.json` lists 32 paths.
+
+Evaluation stack (`infra/docker/docker-compose.demo.yml`, image built from
+`infra/docker/Dockerfile`): `migrate` applies migrations as the admin role and seeds the DEMO
+dataset (second start: "already present; nothing to do"), `api` healthy, `web` on :3000. Verified
+with a real Chromium session against the containers: sign-in as owner@harbor.demo, `/home`,
+`/catalog/items`, `/admin/modules`, `/admin/audit` render; the session cookie is HttpOnly and
+first-party (the API is reached only through the web origin; `/api/v1/*` is proxied in
+`apps/web/src/middleware.ts` with a runtime-configurable target, so the same image serves local,
+compose and deployed APIs without a rebuild). A denied call during the check appeared in the
+audit log as `access.denied` with its reason. Walkthrough for evaluators: `docs/demo-guide.md`.
 
 ## Next smallest vertical slice — Phase 1, slice 1
 

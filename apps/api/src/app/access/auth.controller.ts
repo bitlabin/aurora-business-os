@@ -94,7 +94,7 @@ export class AuthController {
     void reply.setCookie(SESSION_COOKIE, session.token, {
       httpOnly: true,
       sameSite: 'strict',
-      secure: env().NODE_ENV === 'production',
+      secure: env().SESSION_COOKIE_SECURE ?? env().NODE_ENV === 'production',
       path: '/',
       expires: new Date(session.expiresAt),
     });

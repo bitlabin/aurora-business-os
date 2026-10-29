@@ -2,7 +2,7 @@
   "name": "aurora-business-os",
   "version": "0.1.0",
   "private": true,
-  "description": "Aurora Business OS — multi-industry CRM + ERP + accounting platform",
+  "description": "Aurora Business OS \u2014 multi-industry CRM + ERP + accounting platform",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22 <23",
@@ -23,6 +23,10 @@
     "db:down": "docker compose -f infra/docker/docker-compose.yml down",
     "db:local": "bash scripts/pg-local.sh start",
     "db:local:stop": "bash scripts/pg-local.sh stop",
+    "demo:up": "docker compose -f infra/docker/docker-compose.demo.yml up --build -d",
+    "demo:down": "docker compose -f infra/docker/docker-compose.demo.yml down",
+    "demo:reset": "docker compose -f infra/docker/docker-compose.demo.yml down -v",
+    "demo:logs": "docker compose -f infra/docker/docker-compose.demo.yml logs -f api web",
     "db:migrate": "pnpm --filter @aurora/api db:migrate",
     "db:seed": "pnpm --filter @aurora/api db:seed",
     "verify:isolation": "pnpm --filter @aurora/api test:e2e -- isolation"

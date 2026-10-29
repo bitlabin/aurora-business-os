@@ -52,3 +52,22 @@ jobs:
       - run: pnpm db:migrate
       - run: pnpm test:e2e
       - run: pnpm build
+
+  demo-image:
+    name: demo image builds and boots
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the evaluation stack
+        run: docker compose -f infra/docker/docker-compose.demo.yml up --build -d --wait --wait-timeout 300
+      - name: Migrations and seed completed
+        run: |
+          docker compose -f infra/docker/docker-compose.demo.yml logs migrate | grep -q 'aurora: database ready'
+      - name: Sign in through the web origin
+        run: |
+          curl -fsS -X POST http://localhost:3000/api/v1/auth/login \
+            -H 'content-type: application/json' \
+            -d '{"email":"owner@northwind.demo","password":"Demo!Pass123"}' | grep -q '"status":"ok"'
+      - if: always()
+        run: docker compose -f infra/docker/docker-compose.demo.yml down -v
