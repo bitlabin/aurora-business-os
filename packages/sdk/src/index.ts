@@ -149,7 +149,8 @@ export class AuroraClient {
 
   constructor(options: ApiClientOptions = {}) {
     this.baseUrl = options.baseUrl ?? '';
-    this.fetchImpl = options.fetch ?? fetch;
+    // Bind to globalThis: an unbound `fetch` called as a method throws "Illegal invocation" in browsers.
+    this.fetchImpl = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
     this.token = options.token;
     this.companyId = options.companyId;
   }

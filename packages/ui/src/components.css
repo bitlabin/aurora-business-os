@@ -506,3 +506,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile-only controls (hamburger) stay hidden on desktop. */
+.au-mobile-only {
+  display: none;
+}
+@media (max-width: 900px) {
+  .au-mobile-only {
+    display: inline-flex;
+  }
+}
